@@ -1,0 +1,48 @@
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  flyway:
+    enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+
+  datasource:
+    url: jdbc:h2:mem:offer;MODE=MySQL # as long as we do not use testcontainers, we have to set MODE to Mysql because of OfferRepository.existsInSameTimeFrame(); uses DATE Function that is not compatible with H2-PostgreSQL-Mode
+    driver-class-name: org.h2.Driver
+
+---
+
+spring:
+  config:
+    activate:
+      on-profile: testcontainers
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  datasource:
+    url: jdbc:tc:postgresql:14:///cats?currentSchema=public&createDatabaseIfNotExist=true
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: catsUser
+    password: catsPass
+
+  flyway:
+    enabled: true
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
